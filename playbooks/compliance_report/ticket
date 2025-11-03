@@ -1,0 +1,13 @@
+- name: Crear ticket en GLPI
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Crear sesión en GLPI
+      uri:
+        url: "{{ glpi_api_url }}/initSession"
+        method: GET
+        headers:
+          App-Token: "{{ glpi_app_token }}"
+          Authorization: "user_token {{ glpi_user_token }}"
+        return_content: yes
+      register: glpi_session
