@@ -1,0 +1,39 @@
+- name: Crear ticket en GLPI
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Crear sesión en GLPI
+      uri:
+        url: "{{ glpi_api_url }}/initSession?get_full_session=true"
+        method: GET
+        headers:
+          App-Token: "{{ glpi_app_token }}"
+          Authorization: "user_token {{ glpi_user_token }}"
+        return_content: yes
+      register: glpi_session
+    - name: Crear ticket en GLPI
+      uri:
+        url: "{{ glpi_api_url }}/Ticket"
+        method: POST
+        headers:
+          App-Token: "{{ glpi_app_token }}"
+          Session-Token: "{{ glpi_session.json.session_token }}"
+          Content-Type: "application/json"
+        body_format: json
+        body:
+          input:
+            name: "Incidencia desde Ansible"
+            content: "Este ticket fue creado automáticamente mediante Ansible."
+            status: 1           # 1 = Nuevo
+            urgency: 3          # 3 = Media
+            impact: 3           # 3 = Media
+            priority: 3         # 3 = Media
+            type: 1             # 1 = Incidencia
+            requesttypes_id: 1  # Tipo de solicitud
+            entities_id: 0      # ID de la entidad (0 = raíz)
+        return_content: yes
+      register: glpi_ticket
+
+    - name: Mostrar resultado del ticket
+      debug:
+        msg: "Ticket creado con ID: {{ glpi_ticket.json.id }}"
