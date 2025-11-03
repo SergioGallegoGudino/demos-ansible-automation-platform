@@ -4,7 +4,7 @@
   tasks:
     - name: Crear sesión en GLPI
       uri:
-        url: "{{ glpi_api_url }}/initSession"
+        url: "{{ glpi_api_url }}/initSession?get_full_session=true"
         method: GET
         headers:
           App-Token: "{{ glpi_app_token }}"
